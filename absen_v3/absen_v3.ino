@@ -1,29 +1,8 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <SPI.h>
-#include <MFRC522.h>
-#include <ArduinoJson.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-
-// Konfigurasi WiFi
-const char* ssid = "Grendel International";
-const char* password = "";
-
-// Konfigurasi Server Database
-const char* getData = "http://192.168.20.250/absensi/get_data.php";
-const char* nodered = "http://192.168.20.250:1880/absensi";
-
-// Pin Konfigurasi
-#define RST_PIN D1
-#define SS_PIN D2
+#include "require.h"
 
 // NTP Client untuk waktu
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "0.id.pool.ntp.org", 7 * 3600); // Menambahkan 7 jam untuk WIB (UTC+7)
+NTPClient timeClient(ntpUDP, ntpServer, ntpOffset); // Menambahkan 7 jam untuk WIB (UTC+7)
 
 MFRC522 rfid(SS_PIN, RST_PIN);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
