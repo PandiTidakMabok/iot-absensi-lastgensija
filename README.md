@@ -30,4 +30,4 @@ Kelompok hardware mengerjakan bagian mesin absensi menggunakan mikrokontroller N
 
 ## Catatan
 
-Repository ini hanya dikelola oleh anggota dari kedua kelompok yang memiliki kemampuan baik dari segi hardware maupaun software **(bukan beban)**
+Repository ini hanya dikelola oleh anggota dari kedua kelompok yang memiliki kemampuan, baik dari segi hardware maupun software **(bukan beban)**
