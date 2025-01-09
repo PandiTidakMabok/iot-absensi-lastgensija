@@ -8,6 +8,7 @@ Kelompok software mengerjakan bagian tampilan web dan logika server untuk menamp
 
 - [Laragon](https://laragon.org/)
 - [Visual Studio Code](https://code.visualstudio.com/)
+- Browser
 
 ## Hardware
 
