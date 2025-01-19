@@ -1,15 +1,5 @@
 <h1 align="center">Mesin Absensi berbasis NodeMCU dan web dashboard</p>
 
-## Software
-
-Kelompok software mengerjakan bagian tampilan web dan logika server untuk menampilkan data dari database
-
-#### Prerequisted
-
-- [Laragon](https://laragon.org/)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- Browser
-
 ## Hardware
 
 Kelompok hardware mengerjakan bagian mesin absensi menggunakan mikrokontroller NodeMCU
