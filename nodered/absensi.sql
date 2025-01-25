@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Dec 17, 2024 at 08:20 PM
--- Server version: 8.0.30
--- PHP Version: 8.3.14
+-- Host: localhost
+-- Generation Time: Jan 25, 2025 at 05:30 AM
+-- Server version: 10.4.32-MariaDB-log
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,11 +28,23 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `log_absensi` (
-  `uid` int NOT NULL,
-  `student_name` char(255) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `student_name` char(255) DEFAULT NULL,
   `status` varchar(50) NOT NULL,
-  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `date` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `log_absensi`
+--
+
+INSERT INTO `log_absensi` (`uid`, `student_name`, `status`, `date`) VALUES
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 10:35:16'),
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:09:29'),
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:14:39'),
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:14:46'),
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:20:20'),
+(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:20:31');
 
 -- --------------------------------------------------------
 
@@ -43,9 +55,9 @@ CREATE TABLE `log_absensi` (
 CREATE TABLE `siswa` (
   `uid` varchar(255) NOT NULL,
   `student_name` char(255) NOT NULL,
-  `class` int NOT NULL,
+  `class` int(11) NOT NULL,
   `major` char(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `siswa`
