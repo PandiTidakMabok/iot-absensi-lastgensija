@@ -1,6 +1,6 @@
 [
     {
-        "id": "47af2fcbca79a95b",
+        "id": "32c26991b3ccfb96",
         "type": "tab",
         "label": "Mesin Absensi IoT",
         "disabled": false,
@@ -8,11 +8,11 @@
         "env": []
     },
     {
-        "id": "e618c1e3b9e58d6f",
+        "id": "371b48321a6ce361",
         "type": "function",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "tambah/perbarui data siswa",
-        "func": "const state = flow.get('state')\nconst data = msg.payload\nif (state) {\n    msg.topic = `UPDATE siswa SET student_name=${data.student_name}, class=${data.class}, major=${data.major} WHERE uid=${data.uid}` \n} else {\n    msg.topic = \"INSERT INTO siswa (uid, student_name, class, major) VALUE ('\"+msg.payload.uid+\"','\"+msg.payload.student_name+\"','\"+msg.payload.class+\"','\"+msg.payload.major+\"')\"\n}\n\nreturn msg;",
+        "func": "const state = flow.get('state')\nconst data = msg.payload\nif (state) {\n    msg.topic = `UPDATE siswa SET student_name='${data.student_name}', class=${data.class}, major='${data.major}' WHERE uid='${data.uid}'` \n} else {\n    msg.topic = `INSERT INTO siswa (uid, student_name, class, major) VALUE ('${data.uid}','${data.student_name}','${data.class}','${data.major}')`\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -23,14 +23,14 @@
         "y": 220,
         "wires": [
             [
-                "b612ea08c1bd3cfc"
+                "fc17962c2115fbf3"
             ]
         ]
     },
     {
-        "id": "fae40017688e6b0a",
+        "id": "fa8001faf0f03163",
         "type": "http in",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "url": "/absensi",
         "method": "post",
@@ -40,14 +40,14 @@
         "y": 280,
         "wires": [
             [
-                "428464bd5654938f"
+                "b23ec057bb570d74"
             ]
         ]
     },
     {
-        "id": "428464bd5654938f",
+        "id": "b23ec057bb570d74",
         "type": "function",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "cari data siswa",
         "func": "const uid = msg.payload.uid\nflow.set('uid', uid)\nmsg.topic = `SELECT * FROM siswa WHERE uid='${uid}'`\nreturn msg;",
         "outputs": 1,
@@ -60,15 +60,15 @@
         "y": 280,
         "wires": [
             [
-                "5c7961dccc77225e",
-                "6f35a6a17e3dcfae"
+                "568b24a785449aaa",
+                "e2c812b06856d665"
             ]
         ]
     },
     {
-        "id": "90e521c2f48271e2",
+        "id": "7fdc346b7dc4541b",
         "type": "switch",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "property": "payload",
         "propertyType": "msg",
@@ -87,10 +87,10 @@
         "y": 280,
         "wires": [
             [
-                "1cf3ae2a3418ae37"
+                "e8f88bc059e8cab5"
             ],
             [
-                "f659c4c6699a479b"
+                "9a4472e3e9703183"
             ]
         ],
         "outputLabels": [
@@ -99,34 +99,34 @@
         ]
     },
     {
-        "id": "5cc12440d5e5a7fd",
+        "id": "fd894290b5488bc2",
         "type": "http response",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 1800,
+        "x": 2090,
         "y": 360,
         "wires": []
     },
     {
-        "id": "5c7961dccc77225e",
+        "id": "568b24a785449aaa",
         "type": "mysql",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "mydb": "06433410551cefdd",
         "name": "",
         "x": 680,
         "y": 280,
         "wires": [
             [
-                "90e521c2f48271e2"
+                "7fdc346b7dc4541b"
             ]
         ]
     },
     {
-        "id": "08e52c501f4ceaf2",
+        "id": "9dd4fee9039f66b9",
         "type": "ui_form",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "label": "",
         "group": "eb95a5ba9bc70b7f",
@@ -180,14 +180,14 @@
         "y": 220,
         "wires": [
             [
-                "e618c1e3b9e58d6f"
+                "371b48321a6ce361"
             ]
         ]
     },
     {
-        "id": "b612ea08c1bd3cfc",
+        "id": "fc17962c2115fbf3",
         "type": "mysql",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "mydb": "06433410551cefdd",
         "name": "",
         "x": 1580,
@@ -197,30 +197,30 @@
         ]
     },
     {
-        "id": "03b46d94dfb8ac3b",
+        "id": "c5dd43dbd4b8fcc2",
         "type": "function",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "siswa ditemukan",
-        "func": "const now = new Date()\nconst nama = flow.get('student_name')\nconst kelas = flow.get('class')\nlet status\n\nif (now.getDay() > 5) { \n    status = 'prei bolo'\n} else { \n    if (now.getHours() > 5 && now.getHours() <= 7) { \n        status = 'hadir'\n    } else if (now.getHours() > 7 && now.getHours() <= 15) { \n        status = 'terlambat'\n    } else if (now.getHours() > 15 && now.getHours() <= 20) { \n        status = 'pulang'\n    } else { \n        status = 'lu ngapain njir, gabut amat'\n    } \n} \n\nmsg.payload = { \n    status: \"berhasil\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\nreturn msg;",
+        "func": "const now = new Date()\nconst nama = flow.get('name')\nconst kelas = flow.get('class')\nlet status\nif (msg.done) {\n    if (now.getDay() > 5) { \n        status = 'prei bolo'\n    } else { \n        if (now.getHours() > 5 && now.getHours() <= 7) { \n            status = 'hadir'\n        } else if (now.getHours() > 7 && now.getHours() <= 15) { \n            status = 'terlambat'\n        } else if (now.getHours() > 15 && now.getHours() <= 20) { \n            status = 'pulang'\n        } else { \n            status = 'lu ngapain njir, gabut amat'\n        } \n    } \n    msg.topic = `INSERT INTO log_absensi (uid, student_name, status) VALUES ('${flow.get('uid')}', '${nama}', '${kelas}')`\n} else {\n    status = 'sudah absen'\n}\n\n\nmsg.payload = { \n    status: \"berhasil\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1610,
+        "x": 1880,
         "y": 280,
         "wires": [
             [
-                "f4809d53d6be6e29",
-                "5cc12440d5e5a7fd"
+                "fd894290b5488bc2",
+                "e982c4b50f384917"
             ]
         ]
     },
     {
-        "id": "959f13032bd6fa00",
+        "id": "e9f168072f394121",
         "type": "function",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "siswa tidak ditemukan",
         "func": "const uid = flow.get('uid')\n\nmsg.topic = `INSERT INTO log_absensi (uid, status) VALUES ('${uid}','user tidak terdaftar')`\n\nmsg.payload = {\n    status: 'error',\n    message: 'siswa tidak ditemukan'\n}\nreturn msg;",
         "outputs": 1,
@@ -229,19 +229,19 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1400,
+        "x": 1490,
         "y": 340,
         "wires": [
             [
-                "f4809d53d6be6e29",
-                "5cc12440d5e5a7fd"
+                "fd894290b5488bc2",
+                "e982c4b50f384917"
             ]
         ]
     },
     {
-        "id": "1cf3ae2a3418ae37",
+        "id": "e8f88bc059e8cab5",
         "type": "change",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "rules": [
             {
@@ -289,15 +289,15 @@
         "y": 260,
         "wires": [
             [
-                "08e52c501f4ceaf2",
-                "9e24d98f7f21057e"
+                "9dd4fee9039f66b9",
+                "ae930ece7f015d49"
             ]
         ]
     },
     {
-        "id": "66ec706bb53d1dc6",
+        "id": "f1a3f87ac5e7f7ee",
         "type": "inject",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "props": [
             {
@@ -313,34 +313,34 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "{\"uid\":123123123}",
+        "payload": "{\"uid\":123123}",
         "payloadType": "json",
-        "x": 300,
+        "x": 290,
         "y": 380,
         "wires": [
             [
-                "428464bd5654938f"
+                "b23ec057bb570d74"
             ]
         ]
     },
     {
-        "id": "f4809d53d6be6e29",
+        "id": "ec082f198ac36ff1",
         "type": "mysql",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "mydb": "06433410551cefdd",
         "name": "",
-        "x": 1800,
+        "x": 2290,
         "y": 300,
         "wires": [
             []
         ]
     },
     {
-        "id": "9e24d98f7f21057e",
+        "id": "ae930ece7f015d49",
         "type": "function",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "apakah siswa sudah hadir",
-        "func": "const now = new Date();\nconst current = now.toISOString().split('T')[0];\n\nmsg.topic = `SELECT date FROM log_absensi WHERE date = '${current}' AND uid=${flow.get(\"uid\")}`;\n\nreturn msg;",
+        "func": "const now = new Date();\nconst current = now.toISOString().split('T')[0];\n\nmsg.topic = `SELECT date FROM log_absensi WHERE date = '${current}' AND uid='${flow.get(\"uid\")}'`;\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -351,28 +351,28 @@
         "y": 280,
         "wires": [
             [
-                "dd09dad149b10d61"
+                "36eb50e9a8942fd3"
             ]
         ]
     },
     {
-        "id": "dd09dad149b10d61",
+        "id": "36eb50e9a8942fd3",
         "type": "mysql",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "mydb": "06433410551cefdd",
         "name": "",
         "x": 1410,
         "y": 280,
         "wires": [
             [
-                "03b46d94dfb8ac3b"
+                "a0da93717f3bda56"
             ]
         ]
     },
     {
-        "id": "f659c4c6699a479b",
+        "id": "9a4472e3e9703183",
         "type": "change",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "",
         "rules": [
             {
@@ -407,44 +407,152 @@
         "y": 320,
         "wires": [
             [
-                "959f13032bd6fa00"
+                "e9f168072f394121"
             ]
         ]
     },
     {
-        "id": "5753db487093189f",
+        "id": "f2c15d8016ee2588",
         "type": "link in",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "link in 1",
         "links": [
-            "6f35a6a17e3dcfae"
+            "e2c812b06856d665"
         ],
         "x": 1015,
         "y": 220,
         "wires": [
             [
-                "08e52c501f4ceaf2"
+                "9dd4fee9039f66b9"
             ]
         ]
     },
     {
-        "id": "6f35a6a17e3dcfae",
+        "id": "e2c812b06856d665",
         "type": "link out",
-        "z": "47af2fcbca79a95b",
+        "z": "32c26991b3ccfb96",
         "name": "link out 1",
         "mode": "link",
         "links": [
-            "5753db487093189f"
+            "f2c15d8016ee2588"
         ],
         "x": 595,
         "y": 220,
         "wires": []
     },
     {
+        "id": "e982c4b50f384917",
+        "type": "change",
+        "z": "32c26991b3ccfb96",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2120,
+        "y": 300,
+        "wires": [
+            [
+                "ec082f198ac36ff1"
+            ]
+        ]
+    },
+    {
+        "id": "a0da93717f3bda56",
+        "type": "switch",
+        "z": "32c26991b3ccfb96",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1530,
+        "y": 280,
+        "wires": [
+            [
+                "b9813d25ca25865d"
+            ],
+            [
+                "94d8d3e5fe0ba4bc"
+            ]
+        ]
+    },
+    {
+        "id": "b9813d25ca25865d",
+        "type": "change",
+        "z": "32c26991b3ccfb96",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "done",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1690,
+        "y": 260,
+        "wires": [
+            [
+                "c5dd43dbd4b8fcc2"
+            ]
+        ]
+    },
+    {
+        "id": "94d8d3e5fe0ba4bc",
+        "type": "change",
+        "z": "32c26991b3ccfb96",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "done",
+                "pt": "msg",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1690,
+        "y": 300,
+        "wires": [
+            [
+                "c5dd43dbd4b8fcc2"
+            ]
+        ]
+    },
+    {
         "id": "06433410551cefdd",
         "type": "MySQLdatabase",
         "name": "absensi",
-        "host": "localhost",
+        "host": "127.0.0.1",
         "port": "3306",
         "db": "absensi",
         "tz": "",
