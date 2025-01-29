@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 25, 2025 at 05:30 AM
+-- Generation Time: Jan 29, 2025 at 05:53 AM
 -- Server version: 10.4.32-MariaDB-log
 -- PHP Version: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `log_absensi` (
-  `uid` int(11) NOT NULL,
+  `uid` char(100) NOT NULL,
   `student_name` char(255) DEFAULT NULL,
   `status` varchar(50) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
@@ -39,12 +39,12 @@ CREATE TABLE `log_absensi` (
 --
 
 INSERT INTO `log_absensi` (`uid`, `student_name`, `status`, `date`) VALUES
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 10:35:16'),
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:09:29'),
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:14:39'),
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:14:46'),
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:20:20'),
-(123123123, NULL, 'user tidak terdaftar', '2025-01-25 11:20:31');
+('undefined', 'qw', '5', '2025-01-29 11:43:06'),
+('undefined', 'qw', '5', '2025-01-29 11:43:09'),
+('undefined', 'qw', '5', '2025-01-29 11:43:11'),
+('undefined', 'qw', '5', '2025-01-29 11:44:43'),
+('sdfgyu', 'qw', '5', '2025-01-29 11:46:07'),
+('dfubhjiasbhuid', NULL, 'user tidak terdaftar', '2025-01-29 11:46:20');
 
 -- --------------------------------------------------------
 
@@ -64,17 +64,28 @@ CREATE TABLE `siswa` (
 --
 
 INSERT INTO `siswa` (`uid`, `student_name`, `class`, `major`) VALUES
-('43857987', 'a', 1, 'a');
+('43857987', 'a', 1, 'a'),
+('c43t8bb834cvt57', 'sadas', 4, 'dfgdfg'),
+('dfubhjiasbhuid', 'qwewq', 123, 'eqwqe'),
+('sdfgyu', 'qw', 5, 'qe');
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `log_absensi`
+--
+ALTER TABLE `log_absensi`
+  ADD KEY `uid` (`uid`),
+  ADD KEY `date` (`date`);
+
+--
 -- Indexes for table `siswa`
 --
 ALTER TABLE `siswa`
-  ADD UNIQUE KEY `uid` (`uid`);
+  ADD UNIQUE KEY `uid` (`uid`),
+  ADD KEY `uid_2` (`uid`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
