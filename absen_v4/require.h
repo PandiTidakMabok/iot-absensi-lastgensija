@@ -23,4 +23,8 @@ struct Config {
 #define SDA_PIN D2
 #define SCL_PIN D1
 #define NTPSERVER "0.id.pool.ntp.org"
-#define NTPOFFSET 7 * 3600
+
+const long NTPOFFSET = 7 * 3600;
+const unsigned long WIFI_TIMEOUT = 10000; 
+const unsigned long LCD_DISPLAY_TIME = 3000; 
+const size_t JSON_CAPACITY = 256;
