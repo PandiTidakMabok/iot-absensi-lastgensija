@@ -4,82 +4,212 @@ WiFiUDP ntpUDP;
 WiFiClient client;
 HTTPClient http;
 Config config;
-
 ESP8266WebServer web(80);
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 NTPClient timeClient(ntpUDP, NTPSERVER, NTPOFFSET);
 MFRC522 rfid(SS_PIN, RST_PIN);
 
-bool runprogram;
+bool runprogram = false;
+unsigned long lastCardTap = 0;  // Untuk timeout 2 detik
 
 void setup() {
   Serial.begin(115200);
-  EEPROM.begin(512);
-  loadConfig();
-  LittleFS.begin();
-  WiFi.begin();
-  Wire.begin(SDA_PIN, SCL_PIN);
-  web.begin();
-  SPI.begin();
-  http.begin(client, config.nodered);
-  lcd.init();
-  rfid.PCD_Init();
-
-  lcd.backlight();
-  lcd.clear();
-
-  wifiConnect()
-
-  web.on("/", HTTP_GET, httpRoot);
-  web.on("/save", HTTP_POST, httpSave);
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  initializeHardware();
+  setupWebServer();
+  wifiConnect();
 }
 
 void loop() {
-  if (runprogram) {
-    if (WiFi.status() == WL_CONNECTED) {
-      
-    } else {
-      wifiConnect();
-    }
+  web.handleClient();
+
+  if (!runprogram) return;
+
+  if (WiFi.status() != WL_CONNECTED) {
+    wifiConnect();
+    return;
   }
+
+  // Tampilkan "Tap Kartu" jika lebih dari 2 detik tidak ada kartu yang ditap
+  if (millis() - lastCardTap > 2000) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Tap Kartu");
+    delay(1000);
+  }
+
+  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+    return;
+  }
+
+  lastCardTap = millis();  // Reset timer saat kartu ditap
+
+  String uid = "";
+  for (byte i = 0; i < rfid.uid.size; i++) {
+    uid += String(rfid.uid.uidByte[i], HEX);
+  }
+
+  Serial.print("UID Card: ");
+  Serial.println(uid);
+
+  sendToNodered(uid);
+
+  delay(1000);
+  rfid.PICC_HaltA();
+}
+
+void initializeHardware() {
+  Serial.println("Inisialisasi Hardware");
+  EEPROM.begin(512);
+  loadConfig();
+
+  if (!LittleFS.begin()) {
+    Serial.println(F("Gagal mount file system"));
+  }
+
+  Wire.begin(SDA_PIN, SCL_PIN);
+  SPI.begin();
+
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+
+  rfid.PCD_Init();
+
+  WiFi.begin(config.ssid, config.password);
+  http.begin(client, config.nodered);
+  http.addHeader("Content-Type", "application/json");
+}
+
+void setupWebServer() {
+  web.begin();
+  web.on("/", HTTP_GET, httpRoot);
+  web.on("/save", HTTP_POST, httpSave);
 }
 
 void wifiConnect() {
+  lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Conneting to WiFi");
-  unsigned long startWiFiAtempt = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - startWiFiAtempt) >= 10000) {
-    delay(500);
+  lcd.print("Connecting...");
+
+  unsigned long startTime = millis();
+
+  while (WiFi.status() != WL_CONNECTED && (millis() - startTime) < WIFI_TIMEOUT) {
+    delay(250);
     Serial.print(".");
   }
+
   if (WiFi.status() != WL_CONNECTED) {
-    WiFi.softAP("NodeMCU", "12345678");
-    Serial.println("");
-    Serial.println("Failed to Connect");
-    lcd.print("AP Mode");
-    runprogram = false;
+    setupAPMode();
   } else {
-    Serial.println("");
-    Serial.print("Connected to WiFi. IP: ");
-    Serial.println(WiFi.localIP());
-    runprogram = true;
+    setupStationMode();
   }
+}
+
+void setupAPMode() {
+  WiFi.softAP("NodeMCU", "12345678");
+  Serial.println(F("\nAP Mode Aktif"));
+  lcd.clear();
+  lcd.print("AP Mode");
+  runprogram = false;
+}
+
+void setupStationMode() {
+  Serial.println(F("\nWiFi Terkoneksi"));
+  Serial.print(F("IP: "));
+  Serial.println(WiFi.localIP());
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("WiFi Terkoneksi");
+  delay(2000);  // Tampilkan pesan selama 2 detik sebelum masuk standby
+
+  runprogram = true;
+}
+
+bool sendToNodered(const String& uid) {
+  if (WiFi.status() != WL_CONNECTED) return false;
+
+  DynamicJsonDocument doc(200);
+  doc["uid"] = uid;
+
+  String jsonData;
+  serializeJson(doc, jsonData);
+
+  Serial.println("Mengirim JSON: " + jsonData);
+
+  http.begin(client, config.nodered);
+  http.addHeader("Content-Type", "application/json");
+  int httpResponseCode = http.POST(jsonData);
+
+  if (httpResponseCode <= 0) {
+    handleHttpError(httpResponseCode);
+    return false;
+  }
+
+  return processNodeRedResponse(http.getString());
+}
+
+bool processNodeRedResponse(const String& response) {
+  DynamicJsonDocument doc(512);
+  DeserializationError error = deserializeJson(doc, response);
+
+  if (error) {
+    Serial.println(F("JSON parsing gagal"));
+    return false;
+  }
+
+  const char* status = doc["status"] | "failed";
+  if (strcmp(status, "success") != 0) {
+    displayError("Absensi Gagal");
+    return false;
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(doc["nama"] | "Murid");
+  lcd.setCursor(0, 1);
+  lcd.print(doc["status_absen"] | "");
+
+  delay(LCD_DISPLAY_TIME);
+  return true;
+}
+
+void handleHttpError(int httpResponseCode) {
+  Serial.print("HTTP Error: ");
+  Serial.println(httpResponseCode);
+  displayError("Koneksi Error");
+}
+
+void displayError(const char* message) {
+  lcd.clear();
+  lcd.print(message);
+  delay(2000);
 }
 
 void loadConfig() {
   EEPROM.get(0, config);
+  Serial.println("Loaded config:");
+  Serial.println(config.ssid);
+  Serial.println(config.password);
+  Serial.println(config.nodered);
 }
 
 void saveConfig() {
   EEPROM.put(0, config);
-  EEPROM.commit();
+  bool success = EEPROM.commit();
+
+  if (!success) {
+    Serial.println("Gagal menyimpan konfigurasi");
+    return;
+  }
+
+  Serial.println("Konfigurasi berhasil disimpan");
 }
 
 void httpRoot() {
   File html = LittleFS.open("/index.html", "r");
-    if (!html) {
-    web.send(404, "text/plain", "Page not Found");
+  if (!html) {
+    web.send(404, "text/plain", "Halaman Tidak Ditemukan");
     return;
   }
   web.streamFile(html, "text/html");
@@ -87,75 +217,21 @@ void httpRoot() {
 }
 
 void httpSave() {
-  String ssid = web.arg("ssid");
-  String password = web.arg("password");
-  String nodered = web.arg('nodered');
-  
-  strlcpy(config.ssid, ssid.c_str(), sizeof(config.ssid));
-  strlcpy(config.password, password.c_str(), sizeof(config.password));
-  strlcpy(config.nodered, nodered.c_str(), sizeof(config.nodered));
+  if (!web.hasArg("ssid") || !web.hasArg("password") || !web.hasArg("nodered")) {
+    web.send(400, "text/plain", "Data tidak lengkap");
+    return;
+  }
+
+  strlcpy(config.ssid, web.arg("ssid").c_str(), sizeof(config.ssid));
+  strlcpy(config.password, web.arg("password").c_str(), sizeof(config.password));
+  strlcpy(config.nodered, web.arg("nodered").c_str(), sizeof(config.nodered));
+
   saveConfig();
 
-  web.send(200, "text/plain", "")
+  web.send(200, "text/plain", "");
   web.sendHeader("Location", "/");
   web.send(302, "text/plain", "");
+
+  delay(1000);
   ESP.restart();
-}
-
-bool sendToNodered(String uid) {
-  if (WiFi.status() == WL_CONNECTED) {
-
-    String postData = "uid=" + uid;
-
-    Serial.print("Sending UID to Node-RED: ");
-    Serial.println(uid);
-
-    int httpResponseCode = http.POST(postData);
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println("Node-RED Response: " + response);
-
-      DynamicJsonDocument doc(256);
-      DeserializationError error = deserializeJson(doc, response);
-
-      if (!error) {
-        const char* status = doc["status"] | "Gagal";
-
-        if (strcmp(status, "success") == 0) {
-          const char* nama = doc["nama"] | "Murid";
-          const char* kelas = doc["kelas"] | "";
-          const char* status_absen = doc["status_absen"] | "";
-
-          timeClient.update();
-          int currentHour = timeClient.getHours();
-          int currentMinute = timeClient.getMinutes();
-
-          lcd.clear();
-          lcd.setCursor(0, 0);
-          lcd.print(nama);
-          lcd.setCursor(0, 1);
-          lcd.print(status_absen);
-
-          delay(3000);
-
-          return true;
-        } else {
-          lcd.clear();
-          lcd.print("Absensi Gagal");
-          delay(2000);
-        }
-      }
-    } else {
-      Serial.print("Error on sending POST: ");
-      Serial.println(httpResponseCode);
-
-      lcd.clear();
-      lcd.print("Koneksi Error");
-      delay(2000);
-    }
-
-    http.end();
-    http.end();
-  }
-  return false;
 }

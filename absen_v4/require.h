@@ -14,13 +14,18 @@
 #include <LittleFS.h>
 
 struct Config {
-  char* ssid;
-  char* password;
-  char* nodered;
+  char ssid[32];
+  char password[64];
+  char nodered[128];
 };
-#define RST_PIN D4
-#define SS_PIN D3
+
+#define RST_PIN D3
+#define SS_PIN D4
 #define SDA_PIN D2
 #define SCL_PIN D1
 #define NTPSERVER "0.id.pool.ntp.org"
-#define NTPOFFSET 7 * 3600
+
+const long NTPOFFSET = 7 * 3600;
+const unsigned long WIFI_TIMEOUT = 10000; 
+const unsigned long LCD_DISPLAY_TIME = 3000; 
+const size_t JSON_CAPACITY = 256;

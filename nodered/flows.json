@@ -1,6 +1,6 @@
 [
     {
-        "id": "05281de97b961578",
+        "id": "1b61e9e9c0cebd7e",
         "type": "subflow",
         "name": "query db",
         "info": "",
@@ -11,7 +11,7 @@
                 "y": 80,
                 "wires": [
                     {
-                        "id": "e982c4b50f384917"
+                        "id": "acc9825f1d535319"
                     }
                 ]
             }
@@ -22,7 +22,7 @@
                 "y": 80,
                 "wires": [
                     {
-                        "id": "ec082f198ac36ff1",
+                        "id": "e6044943b10cd2c8",
                         "port": 0
                     }
                 ]
@@ -34,9 +34,9 @@
         "icon": "node-red/leveldb.svg"
     },
     {
-        "id": "ec082f198ac36ff1",
+        "id": "e6044943b10cd2c8",
         "type": "mysql",
-        "z": "05281de97b961578",
+        "z": "1b61e9e9c0cebd7e",
         "mydb": "06433410551cefdd",
         "name": "database",
         "x": 400,
@@ -46,9 +46,9 @@
         ]
     },
     {
-        "id": "e982c4b50f384917",
+        "id": "acc9825f1d535319",
         "type": "change",
-        "z": "05281de97b961578",
+        "z": "1b61e9e9c0cebd7e",
         "name": "kurangi query tidak perlu",
         "rules": [
             {
@@ -66,12 +66,12 @@
         "y": 80,
         "wires": [
             [
-                "ec082f198ac36ff1"
+                "e6044943b10cd2c8"
             ]
         ]
     },
     {
-        "id": "25059bd9651a6eb0",
+        "id": "be9667dd44a5412e",
         "type": "subflow",
         "name": "check log",
         "info": "",
@@ -82,7 +82,7 @@
                 "y": 100,
                 "wires": [
                     {
-                        "id": "ae930ece7f015d49"
+                        "id": "a2509f75436598af"
                     }
                 ]
             }
@@ -93,11 +93,11 @@
                 "y": 100,
                 "wires": [
                     {
-                        "id": "b9813d25ca25865d",
+                        "id": "9fd1901c3582ebaa",
                         "port": 0
                     },
                     {
-                        "id": "94d8d3e5fe0ba4bc",
+                        "id": "cb70727ce2c3cae0",
                         "port": 0
                     }
                 ]
@@ -108,9 +108,9 @@
         "color": "#DDAA99"
     },
     {
-        "id": "ae930ece7f015d49",
+        "id": "a2509f75436598af",
         "type": "function",
-        "z": "25059bd9651a6eb0",
+        "z": "be9667dd44a5412e",
         "name": "apakah siswa sudah hadir",
         "func": "const now = new Date();\nconst current = now.toISOString().split('T')[0];\n\nmsg.topic = `SELECT *\nFROM log_absensi\nWHERE DATE(date) = CURDATE()\nAND uid = '${global.get(\"uid\")}'`;\n\nreturn msg;",
         "outputs": 1,
@@ -123,28 +123,28 @@
         "y": 100,
         "wires": [
             [
-                "36eb50e9a8942fd3"
+                "424897ec883e4f37"
             ]
         ]
     },
     {
-        "id": "36eb50e9a8942fd3",
+        "id": "424897ec883e4f37",
         "type": "mysql",
-        "z": "25059bd9651a6eb0",
+        "z": "be9667dd44a5412e",
         "mydb": "06433410551cefdd",
         "name": "",
         "x": 440,
         "y": 100,
         "wires": [
             [
-                "a0da93717f3bda56"
+                "b5bdaa5b7600b225"
             ]
         ]
     },
     {
-        "id": "a0da93717f3bda56",
+        "id": "b5bdaa5b7600b225",
         "type": "switch",
-        "z": "25059bd9651a6eb0",
+        "z": "be9667dd44a5412e",
         "name": "",
         "property": "payload",
         "propertyType": "msg",
@@ -163,17 +163,17 @@
         "y": 100,
         "wires": [
             [
-                "b9813d25ca25865d"
+                "9fd1901c3582ebaa"
             ],
             [
-                "94d8d3e5fe0ba4bc"
+                "cb70727ce2c3cae0"
             ]
         ]
     },
     {
-        "id": "b9813d25ca25865d",
+        "id": "9fd1901c3582ebaa",
         "type": "change",
-        "z": "25059bd9651a6eb0",
+        "z": "be9667dd44a5412e",
         "name": "",
         "rules": [
             {
@@ -196,9 +196,9 @@
         ]
     },
     {
-        "id": "94d8d3e5fe0ba4bc",
+        "id": "cb70727ce2c3cae0",
         "type": "change",
-        "z": "25059bd9651a6eb0",
+        "z": "be9667dd44a5412e",
         "name": "",
         "rules": [
             {
@@ -231,7 +231,7 @@
         "charset": "UTF8"
     },
     {
-        "id": "32c26991b3ccfb96",
+        "id": "8ce62ed88c29a860",
         "type": "tab",
         "label": "Mesin Absensi IoT",
         "disabled": false,
@@ -239,9 +239,9 @@
         "env": []
     },
     {
-        "id": "371b48321a6ce361",
+        "id": "2aa9a8527f634457",
         "type": "function",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "tambah/perbarui data siswa",
         "func": "const state = flow.get('state')\nconst data = msg.payload\nif (state) {\n    msg.topic = `UPDATE siswa SET student_name='${data.student_name}', class=${data.class}, major='${data.major}' WHERE uid='${data.uid}'` \n} else {\n    msg.topic = `INSERT INTO siswa (uid, student_name, class, major) VALUE ('${data.uid}','${data.student_name}','${data.class}','${data.major}')`\n}\n\nreturn msg;",
         "outputs": 1,
@@ -254,14 +254,14 @@
         "y": 380,
         "wires": [
             [
-                "029f5707a7a5e62d"
+                "42a01690506ef04e"
             ]
         ]
     },
     {
-        "id": "fa8001faf0f03163",
+        "id": "c04e4a275765064c",
         "type": "http in",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "url": "/absensi",
         "method": "post",
@@ -271,14 +271,14 @@
         "y": 280,
         "wires": [
             [
-                "b23ec057bb570d74"
+                "f03dfe7b5c931eb9"
             ]
         ]
     },
     {
-        "id": "b23ec057bb570d74",
+        "id": "f03dfe7b5c931eb9",
         "type": "function",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "cari data siswa",
         "func": "const uid = msg.payload.uid\nglobal.set('uid', uid)\nmsg.topic = `SELECT * FROM siswa WHERE uid='${uid}'`\nreturn msg;",
         "outputs": 1,
@@ -291,15 +291,15 @@
         "y": 280,
         "wires": [
             [
-                "685c62ebdedec587",
-                "e2c812b06856d665"
+                "82335974cb71ecb1",
+                "07374a8bc0649354"
             ]
         ]
     },
     {
-        "id": "7fdc346b7dc4541b",
+        "id": "089628bfad52ab4d",
         "type": "switch",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "apakah data ada",
         "property": "payload",
         "propertyType": "msg",
@@ -318,10 +318,10 @@
         "y": 280,
         "wires": [
             [
-                "e8f88bc059e8cab5"
+                "63c9412cdce6e05e"
             ],
             [
-                "9a4472e3e9703183"
+                "2244e9a7b98c1d47"
             ]
         ],
         "outputLabels": [
@@ -330,9 +330,9 @@
         ]
     },
     {
-        "id": "fd894290b5488bc2",
+        "id": "195b763acbdb55ef",
         "type": "http response",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "statusCode": "",
         "headers": {},
@@ -341,11 +341,11 @@
         "wires": []
     },
     {
-        "id": "c5dd43dbd4b8fcc2",
+        "id": "808e4b71939a8a20",
         "type": "function",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "siswa ditemukan",
-        "func": "const now = new Date()\nconst nama = flow.get('name')\nconst kelas = flow.get(\"class\");\nlet status\n\nif (msg.done) {\n    if (now.getDay() > 5) { \n        status = 'prei bolo'\n    } else { \n        if (now.getHours() > 5 && now.getHours() <= 7) { \n            status = 'hadir'\n        } else if (now.getHours() > 7 && now.getHours() <= 15) { \n            status = 'terlambat'\n        } else if (now.getHours() > 15 && now.getHours() <= 20) { \n            status = 'pulang'\n        } else { \n            status = 'lu ngapain njir, gabut amat'\n        } \n    } \n    msg.topic = `INSERT INTO log_absensi (uid, student_name, status) \n    VALUES ('${global.get('uid')}', '${nama}', '${status}')`\n} else {\n    status = 'sudah absen'\n}\n\n\nmsg.payload = { \n    status: \"berhasil\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\n\nreturn msg;",
+        "func": "const now = new Date()\nconst nama = flow.get('name')\nconst kelas = flow.get(\"class\");\nlet status\n\nif (msg.done) {\n    if (now.getDay() > 5) { \n        status = 'prei bolo'\n    } else { \n        if (now.getHours() > 5 && now.getHours() <= 7) { \n            status = 'hadir'\n        } else if (now.getHours() > 7 && now.getHours() <= 15) { \n            status = 'terlambat'\n        } else if (now.getHours() > 15 && now.getHours() <= 20) { \n            status = 'pulang'\n        } else { \n            status = 'lu ngapain njir, gabut amat'\n        } \n    } \n    msg.topic = `INSERT INTO log_absensi (uid, student_name, status) \n    VALUES ('${global.get('uid')}', '${nama}', '${status}')`\n} else {\n    status = 'sudah absen'\n}\n\n\nmsg.payload = { \n    status: \"success\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -356,14 +356,14 @@
         "y": 480,
         "wires": [
             [
-                "55dc6a7c78f13c7e"
+                "ce60d99b0f169ab9"
             ]
         ]
     },
     {
-        "id": "e9f168072f394121",
+        "id": "a2b1b98cdc0ed5bc",
         "type": "function",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "siswa tidak ditemukan",
         "func": "const uid = global.get('uid')\n\nif (msg.done) {\n    msg.topic = `INSERT INTO log_absensi (uid, status) VALUES ('${uid}','user tidak terdaftar')`\n}\n\nmsg.payload = {\n    status: 'error',\n    message: 'siswa tidak ditemukan'\n}\nreturn msg;",
         "outputs": 1,
@@ -376,14 +376,14 @@
         "y": 520,
         "wires": [
             [
-                "1d48fb154460e654"
+                "42586cbde1942eed"
             ]
         ]
     },
     {
-        "id": "e8f88bc059e8cab5",
+        "id": "63c9412cdce6e05e",
         "type": "change",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "rules": [
             {
@@ -431,14 +431,14 @@
         "y": 260,
         "wires": [
             [
-                "afda5f1b5a0bec71"
+                "3fa19bacd8a491c5"
             ]
         ]
     },
     {
-        "id": "9a4472e3e9703183",
+        "id": "2244e9a7b98c1d47",
         "type": "change",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "rules": [
             {
@@ -473,44 +473,44 @@
         "y": 300,
         "wires": [
             [
-                "ba4beaad9699339f"
+                "55d2d4e9f4ffe48a"
             ]
         ]
     },
     {
-        "id": "f2c15d8016ee2588",
+        "id": "b72a691889013ab0",
         "type": "link in",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "form area",
         "links": [
-            "afda5f1b5a0bec71",
-            "e2c812b06856d665"
+            "3fa19bacd8a491c5",
+            "07374a8bc0649354"
         ],
         "x": 255,
         "y": 380,
         "wires": [
             [
-                "9dd4fee9039f66b9"
+                "b33882df491b0d59"
             ]
         ]
     },
     {
-        "id": "e2c812b06856d665",
+        "id": "07374a8bc0649354",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 1",
         "mode": "link",
         "links": [
-            "f2c15d8016ee2588"
+            "b72a691889013ab0"
         ],
         "x": 635,
         "y": 240,
         "wires": []
     },
     {
-        "id": "9dd4fee9039f66b9",
+        "id": "b33882df491b0d59",
         "type": "ui_form",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "label": "",
         "group": "eb95a5ba9bc70b7f",
@@ -564,40 +564,40 @@
         "y": 380,
         "wires": [
             [
-                "371b48321a6ce361"
+                "2aa9a8527f634457"
             ]
         ]
     },
     {
-        "id": "2732833ab2ef7f7d",
-        "type": "subflow:25059bd9651a6eb0",
-        "z": "32c26991b3ccfb96",
+        "id": "b48ec35be5e565d2",
+        "type": "subflow:be9667dd44a5412e",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "x": 360,
         "y": 480,
         "wires": [
             [
-                "c5dd43dbd4b8fcc2"
+                "808e4b71939a8a20"
             ]
         ]
     },
     {
-        "id": "ee9f9ef64bdc3007",
-        "type": "subflow:25059bd9651a6eb0",
-        "z": "32c26991b3ccfb96",
+        "id": "590feb35a397187c",
+        "type": "subflow:be9667dd44a5412e",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "x": 360,
         "y": 520,
         "wires": [
             [
-                "e9f168072f394121"
+                "a2b1b98cdc0ed5bc"
             ]
         ]
     },
     {
-        "id": "ce48c6823807d64d",
-        "type": "subflow:05281de97b961578",
-        "z": "32c26991b3ccfb96",
+        "id": "7f56871e6de383e8",
+        "type": "subflow:1b61e9e9c0cebd7e",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "x": 360,
         "y": 620,
@@ -606,32 +606,32 @@
         ]
     },
     {
-        "id": "685c62ebdedec587",
-        "type": "subflow:05281de97b961578",
-        "z": "32c26991b3ccfb96",
+        "id": "82335974cb71ecb1",
+        "type": "subflow:1b61e9e9c0cebd7e",
+        "z": "8ce62ed88c29a860",
         "name": "",
         "x": 680,
         "y": 280,
         "wires": [
             [
-                "7fdc346b7dc4541b"
+                "089628bfad52ab4d"
             ]
         ]
     },
     {
-        "id": "edb6f9155b76d755",
+        "id": "8a0ddfde292d970d",
         "type": "comment",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "Base API",
         "info": "",
-        "x": 300,
+        "x": 290,
         "y": 240,
         "wires": []
     },
     {
-        "id": "99cdc3f1551bdc8e",
+        "id": "2dc46063d99b5062",
         "type": "comment",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "Form area",
         "info": "",
         "x": 300,
@@ -639,137 +639,137 @@
         "wires": []
     },
     {
-        "id": "afda5f1b5a0bec71",
+        "id": "3fa19bacd8a491c5",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 2",
         "mode": "link",
         "links": [
-            "bb74d9caadef9c1e",
-            "f2c15d8016ee2588"
+            "7f7943d0ee946066",
+            "b72a691889013ab0"
         ],
         "x": 1155,
         "y": 260,
         "wires": []
     },
     {
-        "id": "9e970e2cf2b3f1c1",
+        "id": "b3f5ed5120dc89be",
         "type": "comment",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "Making DB query and HTTP response",
         "info": "",
-        "x": 390,
+        "x": 370,
         "y": 440,
         "wires": []
     },
     {
-        "id": "ba4beaad9699339f",
+        "id": "55d2d4e9f4ffe48a",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 3",
         "mode": "link",
         "links": [
-            "0295f5b4be2ceee4"
+            "f3bf3ca5affbe132"
         ],
         "x": 1155,
         "y": 300,
         "wires": []
     },
     {
-        "id": "bb74d9caadef9c1e",
+        "id": "7f7943d0ee946066",
         "type": "link in",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "found",
         "links": [
-            "afda5f1b5a0bec71"
+            "3fa19bacd8a491c5"
         ],
         "x": 255,
         "y": 480,
         "wires": [
             [
-                "2732833ab2ef7f7d"
+                "b48ec35be5e565d2"
             ]
         ]
     },
     {
-        "id": "0295f5b4be2ceee4",
+        "id": "f3bf3ca5affbe132",
         "type": "link in",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "not found",
         "links": [
-            "ba4beaad9699339f"
+            "55d2d4e9f4ffe48a"
         ],
         "x": 255,
         "y": 520,
         "wires": [
             [
-                "ee9f9ef64bdc3007"
+                "590feb35a397187c"
             ]
         ]
     },
     {
-        "id": "a184a6b34a0ce078",
+        "id": "8679606d12f68991",
         "type": "comment",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "Write log and send response",
         "info": "",
-        "x": 360,
+        "x": 340,
         "y": 580,
         "wires": []
     },
     {
-        "id": "377f9699ddddbe73",
+        "id": "855eb840241c49bb",
         "type": "link in",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "log and response",
         "links": [
-            "029f5707a7a5e62d",
-            "55dc6a7c78f13c7e",
-            "1d48fb154460e654"
+            "42a01690506ef04e",
+            "ce60d99b0f169ab9",
+            "42586cbde1942eed"
         ],
         "x": 255,
         "y": 640,
         "wires": [
             [
-                "ce48c6823807d64d",
-                "fd894290b5488bc2"
+                "7f56871e6de383e8",
+                "195b763acbdb55ef"
             ]
         ]
     },
     {
-        "id": "029f5707a7a5e62d",
+        "id": "42a01690506ef04e",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 4",
         "mode": "link",
         "links": [
-            "377f9699ddddbe73"
+            "855eb840241c49bb"
         ],
         "x": 695,
         "y": 380,
         "wires": []
     },
     {
-        "id": "55dc6a7c78f13c7e",
+        "id": "ce60d99b0f169ab9",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 5",
         "mode": "link",
         "links": [
-            "377f9699ddddbe73"
+            "855eb840241c49bb"
         ],
         "x": 675,
         "y": 480,
         "wires": []
     },
     {
-        "id": "1d48fb154460e654",
+        "id": "42586cbde1942eed",
         "type": "link out",
-        "z": "32c26991b3ccfb96",
+        "z": "8ce62ed88c29a860",
         "name": "link out 6",
         "mode": "link",
         "links": [
-            "377f9699ddddbe73"
+            "855eb840241c49bb"
         ],
         "x": 675,
         "y": 520,

@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `log_absensi` (
-  `uid` char(100) NOT NULL,
+  `uid` varchar(255) NOT NULL,
   `student_name` char(255) DEFAULT NULL,
   `status` varchar(50) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
