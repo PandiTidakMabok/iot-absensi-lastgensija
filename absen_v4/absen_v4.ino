@@ -1,47 +1,38 @@
 #include "require.h"
 
-WiFiUDP ntpUDP;
-WiFiClient client;
-HTTPClient http;
-Config config;
-ESP8266WebServer web(80);
-LiquidCrystal_I2C lcd(0x27, 20, 4);
-NTPClient timeClient(ntpUDP, NTPSERVER, NTPOFFSET);
-MFRC522 rfid(SS_PIN, RST_PIN);
-
-bool runprogram = false;
-unsigned long lastCardTap = 0;  // Untuk timeout 2 detik
-
 void setup() {
   Serial.begin(115200);
   initializeHardware();
+  delay(100);
   setupWebServer();
+  delay(100);
   wifiConnect();
 }
 
 void loop() {
   web.handleClient();
 
-  if (!runprogram) return;
-
-  if (WiFi.status() != WL_CONNECTED) {
-    wifiConnect();
+  if (!runprogram) {
+    delay(10);
     return;
   }
 
-  // Tampilkan "Tap Kartu" jika lebih dari 2 detik tidak ada kartu yang ditap
   if (millis() - lastCardTap > 2000) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Tap Kartu");
-    delay(1000);
+    static unsigned long lastDisplay = 0;
+    if (millis() - lastDisplay > 1000) {
+      lastDisplay = millis();
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Tap Kartu");
+    }
   }
 
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+    delay(50);
     return;
   }
 
-  lastCardTap = millis();  // Reset timer saat kartu ditap
+  lastCardTap = millis();
 
   String uid = "";
   for (byte i = 0; i < rfid.uid.size; i++) {
@@ -53,7 +44,7 @@ void loop() {
 
   sendToNodered(uid);
 
-  delay(1000);
+  delay(50);
   rfid.PICC_HaltA();
 }
 
@@ -63,7 +54,7 @@ void initializeHardware() {
   loadConfig();
 
   if (!LittleFS.begin()) {
-    Serial.println(F("Gagal mount file system"));
+    Serial.println("Gagal mount file system");
   }
 
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -74,10 +65,19 @@ void initializeHardware() {
   lcd.clear();
 
   rfid.PCD_Init();
+  byte v = rfid.PCD_ReadRegister(rfid.VersionReg);
+  Serial.print("RFID Version: 0x");
+  Serial.println(v, HEX);
+  if (v == 0x00 || v == 0xFF) {
+    Serial.println("Warning: RFID reader tidak terdeteksi!");
+  }
 
   WiFi.begin(config.ssid, config.password);
   http.begin(client, config.nodered);
   http.addHeader("Content-Type", "application/json");
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
 }
 
 void setupWebServer() {
@@ -121,13 +121,15 @@ void setupStationMode() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("WiFi Terkoneksi");
-  delay(2000);  // Tampilkan pesan selama 2 detik sebelum masuk standby
+  lcd.setCursor(0, 1);
+  lcd.print(WiFi.localIP());
+  delay(2000);
 
   runprogram = true;
 }
 
-bool sendToNodered(const String& uid) {
-  if (WiFi.status() != WL_CONNECTED) return false;
+void sendToNodered(const String& uid) {
+  if (WiFi.status() != WL_CONNECTED) return;
 
   DynamicJsonDocument doc(200);
   doc["uid"] = uid;
@@ -137,31 +139,35 @@ bool sendToNodered(const String& uid) {
 
   Serial.println("Mengirim JSON: " + jsonData);
 
-  http.begin(client, config.nodered);
-  http.addHeader("Content-Type", "application/json");
+  http.setTimeout(5000);
   int httpResponseCode = http.POST(jsonData);
 
   if (httpResponseCode <= 0) {
     handleHttpError(httpResponseCode);
-    return false;
+    return;
   }
 
-  return processNodeRedResponse(http.getString());
+  processNodeRedResponse(http.getString());
 }
 
-bool processNodeRedResponse(const String& response) {
+void processNodeRedResponse(const String& response) {
   DynamicJsonDocument doc(512);
   DeserializationError error = deserializeJson(doc, response);
 
   if (error) {
     Serial.println(F("JSON parsing gagal"));
-    return false;
+    return;
   }
 
   const char* status = doc["status"] | "failed";
   if (strcmp(status, "success") != 0) {
     displayError("Absensi Gagal");
-    return false;
+    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(BUZZER_PIN, LOW);
+    return;
   }
 
   lcd.clear();
@@ -170,8 +176,14 @@ bool processNodeRedResponse(const String& response) {
   lcd.setCursor(0, 1);
   lcd.print(doc["status_absen"] | "");
 
+  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(BUZZER_PIN, HIGH);
+  delay(500);
+  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(BUZZER_PIN, LOW);
+
   delay(LCD_DISPLAY_TIME);
-  return true;
+  return;
 }
 
 void handleHttpError(int httpResponseCode) {

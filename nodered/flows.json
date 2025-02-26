@@ -271,7 +271,7 @@
         "y": 280,
         "wires": [
             [
-                "f03dfe7b5c931eb9"
+                "e638bf2763fe8439"
             ]
         ]
     },
@@ -287,7 +287,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
+        "x": 590,
         "y": 280,
         "wires": [
             [
@@ -314,7 +314,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 850,
+        "x": 950,
         "y": 280,
         "wires": [
             [
@@ -345,7 +345,7 @@
         "type": "function",
         "z": "8ce62ed88c29a860",
         "name": "siswa ditemukan",
-        "func": "const now = new Date()\nconst nama = flow.get('name')\nconst kelas = flow.get(\"class\");\nlet status\n\nif (msg.done) {\n    if (now.getDay() > 5) { \n        status = 'prei bolo'\n    } else { \n        if (now.getHours() > 5 && now.getHours() <= 7) { \n            status = 'hadir'\n        } else if (now.getHours() > 7 && now.getHours() <= 15) { \n            status = 'terlambat'\n        } else if (now.getHours() > 15 && now.getHours() <= 20) { \n            status = 'pulang'\n        } else { \n            status = 'lu ngapain njir, gabut amat'\n        } \n    } \n    msg.topic = `INSERT INTO log_absensi (uid, student_name, status) \n    VALUES ('${global.get('uid')}', '${nama}', '${status}')`\n} else {\n    status = 'sudah absen'\n}\n\n\nmsg.payload = { \n    status: \"success\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\n\nreturn msg;",
+        "func": "const now = new Date()\nconst nama = flow.get('name')\nconst kelas = flow.get(\"class\");\nlet status\n\nif (msg.done) {\n    if (now.getDay() > 5) {\n        status = 'prei bolo'\n    } else {\n        if (now.getHours() > 5 && now.getHours() <= 7) {\n            status = 'hadir'\n        } else if (now.getHours() > 7 && now.getHours() <= 15) {\n            status = 'terlambat'\n        } else if (now.getHours() > 15 && now.getHours() <= 20) {\n            status = 'pulang'\n        } else {\n            status = 'lu ngapain njir, gabut amat'\n        }\n        msg.topic = `INSERT INTO log_absensi (uid, student_name, status) VALUES ('${global.get('uid')}', '${nama}', '${status}')`\n    }\n} else {\n    status = 'sudah absen'\n}\n\n\nmsg.payload = {\n    status: \"success\",\n    nama,\n    kelas,\n    status_absen: status\n}\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -427,7 +427,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1040,
+        "x": 1140,
         "y": 260,
         "wires": [
             [
@@ -469,7 +469,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1040,
+        "x": 1140,
         "y": 300,
         "wires": [
             [
@@ -503,7 +503,7 @@
         "links": [
             "b72a691889013ab0"
         ],
-        "x": 635,
+        "x": 735,
         "y": 240,
         "wires": []
     },
@@ -610,7 +610,7 @@
         "type": "subflow:1b61e9e9c0cebd7e",
         "z": "8ce62ed88c29a860",
         "name": "",
-        "x": 680,
+        "x": 780,
         "y": 280,
         "wires": [
             [
@@ -648,7 +648,7 @@
             "7f7943d0ee946066",
             "b72a691889013ab0"
         ],
-        "x": 1155,
+        "x": 1255,
         "y": 260,
         "wires": []
     },
@@ -671,7 +671,7 @@
         "links": [
             "f3bf3ca5affbe132"
         ],
-        "x": 1155,
+        "x": 1255,
         "y": 300,
         "wires": []
     },
@@ -732,7 +732,8 @@
         "wires": [
             [
                 "7f56871e6de383e8",
-                "195b763acbdb55ef"
+                "195b763acbdb55ef",
+                "6222e53ee9182657"
             ]
         ]
     },
@@ -774,6 +775,38 @@
         "x": 675,
         "y": 520,
         "wires": []
+    },
+    {
+        "id": "6222e53ee9182657",
+        "type": "debug",
+        "z": "8ce62ed88c29a860",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "e638bf2763fe8439",
+        "type": "json",
+        "z": "8ce62ed88c29a860",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "f03dfe7b5c931eb9"
+            ]
+        ]
     },
     {
         "id": "eb95a5ba9bc70b7f",
