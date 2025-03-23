@@ -1,11 +1,11 @@
 #include "require.hpp"
 
-WiFiClient client;
-
 void initializeWiFi() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
+
+  WiFi.begin(config.ssid, config.password);
 
   unsigned long startTime = millis();
 

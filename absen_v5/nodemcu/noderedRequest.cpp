@@ -4,7 +4,7 @@ HTTPClient http;
 Ticker lastTapTicker;
 
 void sendToNodered(const String& uid) {
-  if (WiFi.status() != WL_CONNECTED) return;
+  checkWiFi();
 
   DynamicJsonDocument doc(200);
   doc["uid"] = uid;

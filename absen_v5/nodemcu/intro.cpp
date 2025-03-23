@@ -1,6 +1,7 @@
 #include "require.hpp"
 
 void intro() {
+  Serial.println();
   Serial.println(F("========================================================================================================================="));
   Serial.println();
   Serial.println();

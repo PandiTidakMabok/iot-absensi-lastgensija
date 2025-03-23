@@ -17,28 +17,23 @@
  * GND     -> GND
  * 
  * BUZZER/LED:
- * Positif -> D8  (GPIO15)
+ * Positif -> D8 (GPIO15)
  * Negatif -> GND
  */
 
 #include "require.hpp"
 
 void setup() {
+  delay(1000);
   Serial.begin(115200);
   intro();
-  delay(100);
   initializeHardware();
-  delay(100);
   initializeConfig();
-  delay(100);
   initializeWiFi();
-  delay(100);
   initializeWebServer();
-  delay(100);
   attachTicker();
 }
 
 void loop() {
   // Anjay, Bersih Cuy
-  delay(1);
 }

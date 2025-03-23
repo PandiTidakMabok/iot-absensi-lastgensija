@@ -1,25 +1,30 @@
 #ifndef require_hpp
 #define require_hpp
 
-#include <ESPAsyncWebServer.h>
+#include <Wire.h>
 #include <EEPROM.h>
-#include <Ticker.h>
+#include <MFRC522.h>
+#include <WiFiClient.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
-#include <Wire.h>
+#include <ESPAsyncWebServer.h>
 #include <LiquidCrystal_I2C.h>
-#include <SPI.h>
-#include <MFRC522.h>
 #include <ArduinoJson.h>
 #include <NTPClient.h>
-#include <WiFiUdp.h>
 #include <pgmspace.h>
+#include <WiFiUdp.h>
+#include <Ticker.h>
+#include <SPI.h>
 
-struct Config { 
+struct __attribute__((packed)) Config { 
   char ssid[32];
   char password[32];
-  char nodered[32];
+  char nodered[128];
+};
+struct __attribute__((packed)) Condition {
+  bool lcd;
+  bool rfid;
+  bool wifi;
 };
 
 #define RST_PIN D3
@@ -31,7 +36,8 @@ struct Config {
 #define NTPOFFSET 7*3600
 #define WIFI_TIMEOUT 10000
 #define JSON_CAPACITY 256
-
+#define LCD_COLS 20
+#define LCD_ROWS 4
 
 extern WiFiUDP ntpUDP;
 extern WiFiClient client;
@@ -40,6 +46,7 @@ extern Config config;
 extern Ticker wifiTicker;
 extern Ticker rfidTicker;
 extern Ticker lastTapTicker;
+extern Ticker esprestartTicker;
 
 extern AsyncWebServer web;
 extern LiquidCrystal_I2C lcd;
@@ -48,12 +55,14 @@ extern MFRC522 rfid;
 
 extern bool runprogram;
 extern const char html[] PROGMEM;
+extern int I2CADDR;
 
 void intro();
 
 void initializeHardware();
 void setupLCD();
 void setupRFID();
+void restart();
 
 void initializeConfig();
 void setupEEPROM();

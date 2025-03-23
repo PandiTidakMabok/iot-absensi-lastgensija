@@ -1,6 +1,7 @@
 #include "require.hpp"
 
 AsyncWebServer web(80);
+Ticker esprestartTicker;
 
 void initializeWebServer() {
   web.on("/", HTTP_GET, httpRoot);
@@ -14,13 +15,17 @@ void httpRoot(AsyncWebServerRequest *request) {
 
 void httpSave(AsyncWebServerRequest *request) {
   if (!request->hasArg("ssid") || !request->hasArg("password") || !request->hasArg("nodered")) {
+    Serial.println(request->arg("ssid").c_str());
+    Serial.println(request->arg("password").c_str());
+    Serial.println(request->arg("nodered").c_str());
     request->send(400, "text/plain", "Data tidak lengkap");
+    Serial.println("tidak lengkap");
     return;
   }
 
   strlcpy(config.ssid, request->arg("ssid").c_str(), sizeof(config.ssid));
   strlcpy(config.password, request->arg("password").c_str(), sizeof(config.password));
-  strlcpy(config.nodered, request->arg("mqtt").c_str(), sizeof(config.nodered));
+  strlcpy(config.nodered, request->arg("nodered").c_str(), sizeof(config.nodered));
 
   saveConfig();
   
@@ -30,6 +35,5 @@ void httpSave(AsyncWebServerRequest *request) {
   // response->addHeader("Location", "/");
   // request->send(response);
 
-  delay(1000);
-  ESP.restart();
+  esprestartTicker.once(3, restart);
 }
