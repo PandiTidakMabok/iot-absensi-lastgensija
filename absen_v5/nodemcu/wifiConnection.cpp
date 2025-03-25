@@ -1,6 +1,9 @@
 #include "require.hpp"
 
 void initializeWiFi() {
+  Serial.println(F("====={ Initialization WiFi }====="));
+  Serial.print(F("Connecting to SSID: "));
+  Serial.print(config.ssid);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
@@ -10,27 +13,33 @@ void initializeWiFi() {
   unsigned long startTime = millis();
 
   while (WiFi.status() != WL_CONNECTED && (millis() - startTime) < WIFI_TIMEOUT) {
-    delay(250);
+    delay(500);
     Serial.print(".");
   }
 
   if (WiFi.status() != WL_CONNECTED) {
+    Serial.println(F("Failed"));
     setupAPMode();
   } else {
+    Serial.println(F("check"));
     setupStationMode();
   }
+
+  Serial.println();
 }
 
 void setupAPMode() {
   WiFi.softAP("NodeMCU", "12345678");
-  Serial.println(F("\nAP Mode Aktif"));
+  Serial.println(F("AP Mode activated"));
   lcd.clear();
   lcd.print("AP Mode");
-  runprogram = false;
+  lcd.setCursor(0, 1);
+  lcd.print(WiFi.softAPIP());
+  condition.wifi = false;
 }
 
 void setupStationMode() {
-  Serial.println(F("\nWiFi Terkoneksi"));
+  Serial.println(F("WiFi connected"));
   Serial.print(F("IP: "));
   Serial.println(WiFi.localIP());
 
@@ -41,7 +50,7 @@ void setupStationMode() {
   lcd.print(WiFi.localIP());
   delay(2000);
 
-  runprogram = true;
+  condition.wifi = true;
 }
 
 void checkWiFi() {

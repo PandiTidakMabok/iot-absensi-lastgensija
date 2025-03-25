@@ -31,9 +31,11 @@ void setup() {
   initializeConfig();
   initializeWiFi();
   initializeWebServer();
+  conclusion();
   attachTicker();
 }
 
 void loop() {
-  // Anjay, Bersih Cuy
+  checkCard();
+  yield();
 }

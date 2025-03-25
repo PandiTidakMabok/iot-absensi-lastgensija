@@ -1,18 +1,15 @@
 #include "require.hpp"
 
 LiquidCrystal_I2C lcd(I2CADDR, LCD_COLS, LCD_ROWS);
-WiFiClient client;
+MFRC522 rfid(SS_PIN, RST_PIN);
 
 void initializeHardware() {
-  Serial.println(F("====={ Inisialisasi Hardware }====="));
+  Serial.println(F("====={ Initialization Hardware }====="));
   setupLCD();
   setupRFID();
 
-  http.begin(client, config.nodered);
-  http.addHeader("Content-Type", "application/json");
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(BUZLED_PIN, OUTPUT);
+  Serial.println();
 }
 
 void setupLCD() {
@@ -24,9 +21,9 @@ void setupLCD() {
   result = Wire.endTransmission();
   if (result == 0) {
     Serial.println(F("check"));
+    condition.lcd = true;
   } else {
-    Serial.println();
-    Serial.print(F("LCD Not Found At Address 0x"));
+    Serial.print(F("Failed. LCD Not Found At Address 0x"));
     Serial.println(I2CADDR, HEX);
     Serial.println(F("Scaning I2C..."));
     
@@ -42,7 +39,10 @@ void setupLCD() {
       }
     }
     
-    Serial.println(F("Noting I2C device Connected"));
+    if (result != 0) {
+      Serial.println(F("Noting I2C device Connected"));
+      condition.lcd = false;
+    };
   }
 
   lcd.init();
@@ -58,10 +58,12 @@ void setupRFID() {
   byte v = rfid.PCD_ReadRegister(rfid.VersionReg);
   if (v == 0x00 || v == 0xFF) {
     Serial.println(F("Failed. Not detected"));
+    condition.rfid = false;
   } else {
     Serial.println(F("check"));
     Serial.print(F("RFID Version: 0x"));
     Serial.println(v, HEX);
+    condition.rfid = true;
   }
 
 }

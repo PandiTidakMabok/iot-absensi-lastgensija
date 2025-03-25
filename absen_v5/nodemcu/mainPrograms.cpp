@@ -1,12 +1,16 @@
 #include "require.hpp"
 
+volatile bool rfidFlag = false;
+
+void setRFIDFlag() {
+  rfidFlag = true;
+}
+
 void checkCard() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Tap Kartu");
+  if (!rfidFlag) return;
 
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
-    delay(50);
+    rfidFlag = false;
     return;
   }
 
@@ -22,6 +26,12 @@ void checkCard() {
 
   sendToNodered(uid);
 
-  delay(50);
   rfid.PICC_HaltA();
+  rfidFlag = false;
+}
+
+void tapKartuDisplay() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Tap Kartu");
 }

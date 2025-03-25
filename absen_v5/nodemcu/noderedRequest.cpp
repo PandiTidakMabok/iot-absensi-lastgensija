@@ -1,7 +1,10 @@
 #include "require.hpp"
 
+WiFiClient client;
 HTTPClient http;
 Ticker lastTapTicker;
+Ticker buzledTicker;
+volatile bool buzledState = false;
 
 void sendToNodered(const String& uid) {
   checkWiFi();
@@ -14,6 +17,8 @@ void sendToNodered(const String& uid) {
 
   Serial.println("Mengirim JSON: " + jsonData);
 
+  http.begin(client, config.nodered);
+  http.addHeader("Content-Type", "application/json");
   http.setTimeout(5000);
   int httpResponseCode = http.POST(jsonData);
 
@@ -21,8 +26,8 @@ void sendToNodered(const String& uid) {
     handleHttpError(httpResponseCode);
     return;
   }
-
   processNodeRedResponse(http.getString());
+  http.end();
 }
 
 void processNodeRedResponse(const String& response) {
@@ -37,11 +42,9 @@ void processNodeRedResponse(const String& response) {
   const char* status = doc["status"] | "failed";
   if (strcmp(status, "success") != 0) {
     displayError("Absensi Gagal");
-    digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(BUZZER_PIN, HIGH);
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(BUZZER_PIN, LOW);
+    setBuzledState(true);
+    buzledTicker.once(1, setBuzledState, false);
+    lastTapTicker.once(2, attachTicker);
     return;
   }
 
@@ -51,13 +54,10 @@ void processNodeRedResponse(const String& response) {
   lcd.setCursor(0, 1);
   lcd.print(doc["status_absen"] | "");
 
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(BUZZER_PIN, HIGH);
-  delay(500);
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(BUZZER_PIN, LOW);
-
+  setBuzledState(true);
+  buzledTicker.once_ms(500, setBuzledState, false);
   lastTapTicker.once(2, attachTicker);
+  http.end();
   return;
 }
 
@@ -71,4 +71,9 @@ void displayError(const char* message) {
   lcd.clear();
   lcd.print(message);
   delay(2000);
+}
+
+void setBuzledState(bool state) {
+  buzledState = state ? HIGH : LOW;
+  digitalWrite(BUZLED_PIN, buzledState);
 }

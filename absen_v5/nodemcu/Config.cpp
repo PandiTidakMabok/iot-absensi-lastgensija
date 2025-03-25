@@ -3,33 +3,42 @@
 Config config;
 
 void initializeConfig() {
-  Serial.println(F("====={ Inisialisasi Konfigurasi }====="));
-  setupEEPROM();
+  Serial.println(F("====={ Initialization Configuration }====="));
+  bool state = setupEEPROM();
+  if (!state) return;
   Serial.println(F("Loaded config: "));
-  Serial.print(F("\t SSID: "));
+  Serial.print(F("- SSID: "));
   Serial.println(config.ssid);
-  Serial.print(F("\t Password: "));
+  Serial.print(F("- Password: "));
   Serial.println(config.password);
-  Serial.print(F("\t Node-RED: "));
+  Serial.print(F("- Node-RED: "));
   Serial.println(config.nodered);
   Serial.println();
 }
 
-void setupEEPROM() {
-  Serial.print(F("* Setting Up EEPROM"));
+bool setupEEPROM() {
+  Serial.print(F("* Setting Up EEPROM. "));
   EEPROM.begin(512);
   EEPROM.get(0, config);
-  Serial.println(F("check"));
+  if (strlen(config.ssid) > 0 && strlen(config.password) > 0 && strlen(config.nodered) > 0) {
+    Serial.println(F("check"));
+    condition.conf = true;
+    return true;
+  } else {
+    Serial.println(F("Failed"));
+    condition.conf = false;
+    return false;
+  }
 }
 
 void saveConfig() {
-    EEPROM.put(0, config);
+  EEPROM.put(0, config);
   bool success = EEPROM.commit();
 
   if (!success) {
-    Serial.println("Gagal menyimpan konfigurasi");
+    Serial.println(F("Gagal menyimpan konfigurasi"));
     return;
   }
 
-  Serial.println("Konfigurasi berhasil disimpan");
+  Serial.println(F("Konfigurasi berhasil disimpan"));
 }
