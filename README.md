@@ -154,7 +154,7 @@ Kontribusi sangat diterima! Silakan:
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan under MIT License - lihat file [LICENSE](LICENSE) untuk detail.
+Proyek ini dilisensikan dibawah GPL v3.0 - lihat file [LICENSE](LICENSE) untuk detail.
 
 ---
 
